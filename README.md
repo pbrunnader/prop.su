@@ -2,10 +2,13 @@ Programming languages and Paradigms
 =======
 Description
 For each assignment there will be this structure.
--- assignment_#
-   |-- specification
-   |-- source
-   |-- report
+
+    -- assignment_#
+       |-- specification
+       |-- source
+       |-- report
+
+------
 
 assignment 0
 Here comes the description ...
