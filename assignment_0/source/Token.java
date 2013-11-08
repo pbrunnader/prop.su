@@ -38,6 +38,7 @@ public class Token {
 		this.value = value;
 		this.type = type;
 	}
+	
 
 	public Object value() {
 		return value;
@@ -50,4 +51,10 @@ public class Token {
 	public Token.Type type() {
 		return type;
 	}
+	
+	public String toString() {
+		System.out.println(text);
+		return text;
+	}
+	
 }

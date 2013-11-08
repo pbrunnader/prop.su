@@ -7,12 +7,22 @@
  * @version 1.0
  */
 
+import java.io.IOException;
 import java.io.StringReader;
 
 class YourScannerImpl implements Scanner {
-    
+	
+	private StringReader scanner;
+	private Boolean first = true;
+	
     public YourScannerImpl(StringReader reader) {
-        
+        this.scanner = reader;
+        try {
+			this.scanner.mark(0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     /**
@@ -20,7 +30,15 @@ class YourScannerImpl implements Scanner {
      *
      */
     public char current() {
-        return Character.valueOf('\u0000');
+    	char current = 0;
+    	try {
+    		scanner.reset();
+			current = (char) scanner.read();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return current;
     }
 
     /**
@@ -30,7 +48,25 @@ class YourScannerImpl implements Scanner {
      *
      */
     public char next() {
-        return Character.valueOf('\u0000');
+    	char next = 0;
+    	
+    	try {
+    		do {
+        		scanner.reset();
+	    		if(!this.first)
+	    			scanner.read();
+	    		this.first = false;
+	    		scanner.mark(1);
+	    		if(scanner.read() == -1 )
+	    			return Scanner.EOF;
+	    		scanner.reset();
+    			next = (char) scanner.read();
+    		}while(Character.isWhitespace(next));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return next;
     }
 
 
@@ -41,7 +77,19 @@ class YourScannerImpl implements Scanner {
      *
      */
     public char peek() {
-        return Character.valueOf('\u0000');
+    	char peek = 0;
+    	
+    	try {
+			scanner.reset();
+			scanner.read();
+    		do {
+    			peek = (char) scanner.read();
+    		}while(Character.isWhitespace(peek));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return peek;
     }
 
 }
