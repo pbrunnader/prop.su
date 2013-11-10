@@ -10,8 +10,8 @@
 class YourTokenizerImpl implements Tokenizer {
 	
 	private Scanner scanner;
-	private Token current;
-	private Token peek;
+	private Token current = null;
+	private Token peek = null;
 	
 	
     public YourTokenizerImpl(Scanner sc) {
@@ -23,6 +23,7 @@ class YourTokenizerImpl implements Tokenizer {
     private Token extractToken() {
     	char ch = scanner.next();
     	if(ch == Scanner.EOF) {
+    		System.out.println("EOF");
     		return new Token(String.valueOf(ch), String.valueOf(ch), Token.Type.EOF);
     		
     	}
@@ -47,12 +48,15 @@ class YourTokenizerImpl implements Tokenizer {
     }
         
     private Token extractIdentifier() {
+    	System.out.println("extract id");
     	String identifier = String.valueOf(scanner.current());
     	
     	while(Character.isLetter(scanner.peek())) {
     		identifier += String.valueOf(scanner.next());
     	}
-		return new Token(identifier, identifier, Token.Type.IDENTIFIER );
+    	Token t = new Token(identifier, identifier, Token.Type.IDENTIFIER );
+    	System.out.println("token: " + t.value());
+		return t;
 	}
 
 	private Token extractNumber() {
@@ -80,7 +84,9 @@ class YourTokenizerImpl implements Tokenizer {
      */
     public Token next() {
     	current = peek;
+    	System.out.println("current: " + current.toString() );
     	peek = extractToken();
+    	System.out.println("peek: " + peek.toString());
     	return current;
     }
 

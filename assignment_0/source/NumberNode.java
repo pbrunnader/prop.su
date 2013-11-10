@@ -8,7 +8,7 @@
  */
 
 public class NumberNode implements Node {
-	public Number value;
+	public Object value;
 
 	public Object visit(Visitor v) {
 		return v.visitNumber(this);

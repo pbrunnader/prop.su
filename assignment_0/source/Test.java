@@ -25,11 +25,11 @@ public class Test {
 			Scanner sc = new YourScannerImpl(new StringReader(expr));
 			
 			YourTokenizerImpl to = new YourTokenizerImpl(sc);
+			/*to.next().toString();
 			to.next().toString();
 			to.next().toString();
 			to.next().toString();
-			to.next().toString();
-			to.next().toString();
+			to.next().toString();*/
 			
 			Parser pa = new YourParserImpl(to);
 			Node root = pa.parse();

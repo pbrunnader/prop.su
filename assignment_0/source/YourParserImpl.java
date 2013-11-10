@@ -12,17 +12,18 @@ class YourParserImpl implements Parser {
 	private Tokenizer tokenizer;
 	
     public YourParserImpl(Tokenizer to) {
-        
+        this.tokenizer = to;
     }
     
     public Node parse() {
         AssignNode node = new AssignNode();
+
         Token t = tokenizer.next();
         Token n = tokenizer.next();
         
         if(t.type() == Token.Type.IDENTIFIER && n.type() == Token.Type.EQ) {
         	node.left = new IdentifierNode();
-        	node.left.value = t.text();
+        	//node.left.value = t.text();
         	
         	tokenizer.next();
         	node.right = this.parseExpression();
@@ -50,8 +51,9 @@ class YourParserImpl implements Parser {
 		if(tokenizer.current().type() == Token.Type.LEFT_PAREN ) {
 			return this.parseExpression();
 		} else if ( tokenizer.current().type() == Token.Type.NUMBER ) {
-			Node node = new NumberNode();
+			NumberNode node = new NumberNode();
 			node.value = tokenizer.current().value();
+			System.out.println("new number node created: " + node.value.toString());
 			return node;
 		}
 		return null;
