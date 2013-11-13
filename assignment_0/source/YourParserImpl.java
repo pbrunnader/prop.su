@@ -23,7 +23,7 @@ class YourParserImpl implements Parser {
         
         if(t.type() == Token.Type.IDENTIFIER && n.type() == Token.Type.EQ) {
         	node.left = new IdentifierNode();
-        	//node.left.value = t.text();
+        	node.left.value = t.text();
         	
         	tokenizer.next();
         	node.right = this.parseExpression();

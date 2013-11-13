@@ -8,7 +8,7 @@
  */
 
 public class AssignNode implements Node {
-	public Node left;
+	public IdentifierNode left;
 	public Node right;
 
 	public Object visit(Visitor v) {
