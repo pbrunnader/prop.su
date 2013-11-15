@@ -7,6 +7,9 @@
  * @version 1.0
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Visitor {
 
 	public Object visit(Node node) {
@@ -17,26 +20,43 @@ public class Visitor {
 	}
 
 	public Object visitAssign(AssignNode n) {
-		return null;
+        Map<String, Number> assignments = new HashMap<String, Number>();
+        String left = (String) visitIdentifier(n.left);
+        Number right = (Number) visitExpression((ExpressionNode) n.right);
+		assignments.put(left, right);
+        return assignments;
 	}
 
 	public Object visitExpression(ExpressionNode n) {
-		return null;
+        if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.PLUS)) {
+            return ((Integer) visitTerm((TermNode) n.left)) + ((Integer) visitTerm((TermNode) n.right));
+        } else if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.MINUS)) {
+            return ((Integer) visitTerm((TermNode) n.left)) - ((Integer) visitTerm((TermNode) n.right));
+        }
+        return ((Integer) visitTerm((TermNode) n.left));
 	}
 
 	public Object visitTerm(TermNode n) {
-		return null;
+        if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.MULT)) {
+            return ((Integer) visitFactor((FactorNode) n.left)) * ((Integer) visitFactor((FactorNode) n.right));
+        } else if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.DIV)) {
+            return ((Integer) visitFactor((FactorNode) n.left)) / ((Integer) visitFactor((FactorNode) n.right));
+        }
+        return ((Integer) visitFactor((FactorNode) n.left));
 	}
 
 	public Object visitFactor(FactorNode n) {
-		return null;
+        if(n.node instanceof ExpressionNode) {
+            return ((Integer) visitExpression((ExpressionNode) n.node));
+        } 
+        return ((Integer) visitNumber((NumberNode) n.node));
 	}
 
 	public Object visitIdentifier(IdentifierNode n) {
-		return null;
+		return n.value;
 	}
 
 	public Object visitNumber(NumberNode n) {
-		return null;
+		return (Integer) n.value;
 	}
 }

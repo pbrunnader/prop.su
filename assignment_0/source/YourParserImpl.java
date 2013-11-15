@@ -10,29 +10,23 @@
 class YourParserImpl implements Parser {
 	
 	private Tokenizer tokenizer;
-	
+
     public YourParserImpl(Tokenizer to) {
         this.tokenizer = to;
     }
     
     public Node parse() {
         AssignNode node = new AssignNode();
-        System.out.println("new assign node created.");
         Token t = tokenizer.next();
         Token n = tokenizer.next();
         
-        if(t.type() == Token.Type.IDENTIFIER && n.type() == Token.Type.EQ) {
-        	node.left = new IdentifierNode();
-        	node.left.value = t.text();
-        	System.out.println("new idNode created: " + node.left.value);
-        	
-        	tokenizer.next();
-        	node.right = this.parseExpression();
-        	
-        	
+        if (t.type() == Token.Type.IDENTIFIER && n.type() == Token.Type.EQ) {
+        	    node.left = new IdentifierNode();
+        	    node.left.value = t.text();
+        	    tokenizer.next();
+        	    node.right = this.parseExpression();
         } else {
-        	
-        	throw new RuntimeException("ERROR");
+        	    throw new RuntimeException("parse(): No valid 'IDENTIFIER' or 'EQ' given!");
         }
         return node;
     }
@@ -40,40 +34,43 @@ class YourParserImpl implements Parser {
 	private Node parseExpression() {
 		ExpressionNode node = new ExpressionNode();
 		node.left = parseTerm();
-		node.operator = tokenizer.current().text();
-		System.out.println("new expression node created: " + node.operator);
-		node.right = parseTerm();
-		return node;
+        if (tokenizer.current().type() == Token.Type.PLUS || tokenizer.current().type() == Token.Type.MINUS) {
+		    node.operator = tokenizer.current().text();
+            tokenizer.next();
+            node.right = parseTerm();
+        }
+        return node;
 	}
 
 	private Node parseTerm() {
 		TermNode node = new TermNode();
-		//node.operator = tokenizer.current().text();
-		//System.out.println("new term node created: " + node.operator);
 		node.left = parseFactor();
-		node.operator = tokenizer.next().text();
-		System.out.println("new term node created: " + node.operator);
-		node.right = parseFactor();
+        if (tokenizer.current().type() == Token.Type.MULT || tokenizer.current().type() == Token.Type.DIV) {
+            node.operator = tokenizer.current().text();
+            tokenizer.next();
+            node.right = parseFactor();
+        }
 		return node;
 	}
 
 	private Node parseFactor() {
-		FactorNode fNode = new FactorNode();
-		System.out.println("new factor node created");
-		if(tokenizer.current().type() == Token.Type.LEFT_PAREN ) {
-			return this.parseExpression();
-		} else if ( tokenizer.current().type() == Token.Type.NUMBER ) {
-			return parseNumber();
+		FactorNode node = new FactorNode();
+		if(tokenizer.current().type() == Token.Type.LEFT_PAREN) {
+             tokenizer.next();
+			node.node = parseExpression();
+		} else if (tokenizer.current().type() == Token.Type.NUMBER) {
+			node.node = parseNumber();
+        }else if (tokenizer.current().type() == Token.Type.RIGHT_PAREN) {
+            tokenizer.next();
 		}
-		return fNode;
+		return node;
 	}
 	
 	private Node parseNumber() {
 		NumberNode node = new NumberNode();
 		node.value = tokenizer.current().value();
-		System.out.println("new number node created: " + node.value.toString());
-		return node;
-		
+        tokenizer.next();
+		return node;		
 	}
 
 }
