@@ -17,13 +17,14 @@ class YourParserImpl implements Parser {
     
     public Node parse() {
         AssignNode node = new AssignNode();
-
+        System.out.println("new assign node created.");
         Token t = tokenizer.next();
         Token n = tokenizer.next();
         
         if(t.type() == Token.Type.IDENTIFIER && n.type() == Token.Type.EQ) {
         	node.left = new IdentifierNode();
         	node.left.value = t.text();
+        	System.out.println("new idNode created: " + node.left.value);
         	
         	tokenizer.next();
         	node.right = this.parseExpression();
@@ -37,26 +38,42 @@ class YourParserImpl implements Parser {
     }
 
 	private Node parseExpression() {
-		parseTerm();
-		return null;
+		ExpressionNode node = new ExpressionNode();
+		node.left = parseTerm();
+		node.operator = tokenizer.current().text();
+		System.out.println("new expression node created: " + node.operator);
+		node.right = parseTerm();
+		return node;
 	}
 
 	private Node parseTerm() {
-		
-		parseFactor();
-		return null;
+		TermNode node = new TermNode();
+		//node.operator = tokenizer.current().text();
+		//System.out.println("new term node created: " + node.operator);
+		node.left = parseFactor();
+		node.operator = tokenizer.next().text();
+		System.out.println("new term node created: " + node.operator);
+		node.right = parseFactor();
+		return node;
 	}
 
 	private Node parseFactor() {
+		FactorNode fNode = new FactorNode();
+		System.out.println("new factor node created");
 		if(tokenizer.current().type() == Token.Type.LEFT_PAREN ) {
 			return this.parseExpression();
 		} else if ( tokenizer.current().type() == Token.Type.NUMBER ) {
-			NumberNode node = new NumberNode();
-			node.value = tokenizer.current().value();
-			System.out.println("new number node created: " + node.value.toString());
-			return node;
+			return parseNumber();
 		}
-		return null;
+		return fNode;
+	}
+	
+	private Node parseNumber() {
+		NumberNode node = new NumberNode();
+		node.value = tokenizer.current().value();
+		System.out.println("new number node created: " + node.value.toString());
+		return node;
+		
 	}
 
 }
