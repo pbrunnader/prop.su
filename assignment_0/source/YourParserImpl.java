@@ -60,7 +60,8 @@ class YourParserImpl implements Parser {
 			node.node = parseExpression();
 		} else if (tokenizer.current().type() == Token.Type.NUMBER) {
 			node.node = parseNumber();
-        }else if (tokenizer.current().type() == Token.Type.RIGHT_PAREN) {
+        }
+        if (tokenizer.current().type() == Token.Type.RIGHT_PAREN) {
             tokenizer.next();
 		}
 		return node;

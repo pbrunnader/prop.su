@@ -14,8 +14,8 @@ import java.util.Map;
 public class Test {
 
 	public static void main(String[] args) throws Exception {
-		String[] exprs = new String[] {"abc=200 + ( 10 + 1 )", "a = 1 + 2", "b= 1+ 2", "c=1*2+11/2", "d=(2+3)-(10*(20-3))" };
-		Object[] expecteds = new Object[] { new Object[] { "z", 2 }, new Object[] { "a", 3 },
+		String[] exprs = new String[] { "a = 1 + 2", "b= 1+ 2", "c=1*2+11/2", "d=(2+3)-(10*(20-3))" };
+		Object[] expecteds = new Object[] { new Object[] { "a", 3 },
 				new Object[] { "b", 3 }, new Object[] { "c", 7 }, new Object[] {"d", -165}};
 
 		for (int n = 0; n < exprs.length; n++) {
@@ -29,6 +29,7 @@ public class Test {
 			
 			Parser pa = new YourParserImpl(to);
 			Node root = pa.parse();
+
 			// System.out.println(expr);
 			// System.out.println(root.toTree());
 
@@ -37,9 +38,10 @@ public class Test {
 			@SuppressWarnings("unchecked")
 			Map<String, Number> observed = (Map<String, Number>) v.visit(root);
 			System.out.println(observed);
-			/* System.out.println("Evaluated: '" + expr + "' Expected: '"
+			System.out.println("Evaluated: '" + expr + "' Expected: '"
 					+ expected[0] + "'='" + expected[1] + "' Got: '"
-					+ observed.get(expected[0]) + "'"); */
+					+ observed.get(expected[0]) + "'");
+            System.out.println("");
 		}
 
 	}
