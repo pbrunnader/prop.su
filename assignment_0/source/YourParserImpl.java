@@ -37,7 +37,7 @@ class YourParserImpl implements Parser {
         if (tokenizer.current().type() == Token.Type.PLUS || tokenizer.current().type() == Token.Type.MINUS) {
 		    node.operator = tokenizer.current().text();
             tokenizer.next();
-            if(tokenizer.peek().type() == Token.Type.PLUS || tokenizer.peek().type() == Token.Type.MINUS) {
+            if(tokenizer.peek().type() == Token.Type.PLUS || tokenizer.peek().type() == Token.Type.MINUS || tokenizer.current().type() == Token.Type.LEFT_PAREN) {
                 node.right = parseExpression();
             } else {
                 node.right = parseTerm();
@@ -52,7 +52,7 @@ class YourParserImpl implements Parser {
         if (tokenizer.current().type() == Token.Type.MULT || tokenizer.current().type() == Token.Type.DIV) {
             node.operator = tokenizer.current().text();
             tokenizer.next();
-            if(tokenizer.peek().type() == Token.Type.MULT || tokenizer.peek().type() == Token.Type.DIV) {
+            if(tokenizer.peek().type() == Token.Type.MULT || tokenizer.peek().type() == Token.Type.DIV || tokenizer.current().type() == Token.Type.LEFT_PAREN) {
                 node.right = parseTerm();
             } else {
                 node.right = parseFactor();
@@ -66,12 +66,10 @@ class YourParserImpl implements Parser {
 		if(tokenizer.current().type() == Token.Type.LEFT_PAREN) {
              tokenizer.next();
 			node.node = parseExpression();
+            tokenizer.next();
 		} else if (tokenizer.current().type() == Token.Type.NUMBER) {
 			node.node = parseNumber();
         }
-        if (tokenizer.current().type() == Token.Type.RIGHT_PAREN) {
-            tokenizer.next();
-		}
 		return node;
 	}
 	
