@@ -9,15 +9,21 @@ For each assignment there will be this structure.
        |-- report
 
 ------
+
 <h5>assignment 0</h5> Syntax, Parsers and Semantics
+
 ------
+
 <h5>assignment 1 </h5> Implementing Dynamic Method Resolution
+
 ------
-<h5>assignment 2 </h5>
-Here comes the description ...
+
+<h5>assignment 2 </h5> Here comes the description ...
+
 ------
-<h5>assignment 3 </h5>
-Here comes the description ...
+
+<h5>assignment 3 </h5> Here comes the description ...
+
 ------
 
 How to use github:
