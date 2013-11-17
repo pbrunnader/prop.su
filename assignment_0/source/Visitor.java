@@ -29,8 +29,12 @@ public class Visitor {
 
 	public Object visitExpression(ExpressionNode n) {
         if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.PLUS)) {
+            if(n.right instanceof ExpressionNode)
+                return ((Integer) visitTerm((TermNode) n.left)) + ((Integer) visitExpression((ExpressionNode) n.right));
             return ((Integer) visitTerm((TermNode) n.left)) + ((Integer) visitTerm((TermNode) n.right));
         } else if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.MINUS)) {
+            if(n.right instanceof ExpressionNode)
+                return ((Integer) visitTerm((TermNode) n.left)) - ((Integer) visitExpression((ExpressionNode) n.right));
             return ((Integer) visitTerm((TermNode) n.left)) - ((Integer) visitTerm((TermNode) n.right));
         }
         return ((Integer) visitTerm((TermNode) n.left));
@@ -38,8 +42,12 @@ public class Visitor {
 
 	public Object visitTerm(TermNode n) {
         if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.MULT)) {
+            if(n.right instanceof TermNode)
+                return ((Integer) visitFactor((FactorNode) n.left)) * ((Integer) visitTerm((TermNode) n.right));
             return ((Integer) visitFactor((FactorNode) n.left)) * ((Integer) visitFactor((FactorNode) n.right));
         } else if(n.operator != null && Token.Type.OPERATORS.get(n.operator).equals(Token.Type.DIV)) {
+            if(n.right instanceof TermNode)
+                return ((Integer) visitFactor((FactorNode) n.left)) / ((Integer) visitTerm((TermNode) n.right));
             return ((Integer) visitFactor((FactorNode) n.left)) / ((Integer) visitFactor((FactorNode) n.right));
         }
         return ((Integer) visitFactor((FactorNode) n.left));

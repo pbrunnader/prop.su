@@ -37,9 +37,11 @@ class YourParserImpl implements Parser {
         if (tokenizer.current().type() == Token.Type.PLUS || tokenizer.current().type() == Token.Type.MINUS) {
 		    node.operator = tokenizer.current().text();
             tokenizer.next();
-            if(tokenizer.peek().type() == Token.Type.PLUS || tokenizer.peek().type() == Token.Type.MINUS)
-                throw new RuntimeException("parseExpression(): Does not match to grammer!");
-            node.right = parseTerm();
+            if(tokenizer.peek().type() == Token.Type.PLUS || tokenizer.peek().type() == Token.Type.MINUS) {
+                node.right = parseExpression();
+            } else {
+                node.right = parseTerm();
+            }
         }
         return node;
 	}
@@ -50,9 +52,11 @@ class YourParserImpl implements Parser {
         if (tokenizer.current().type() == Token.Type.MULT || tokenizer.current().type() == Token.Type.DIV) {
             node.operator = tokenizer.current().text();
             tokenizer.next();
-            if(tokenizer.peek().type() == Token.Type.MULT || tokenizer.peek().type() == Token.Type.DIV)
-                throw new RuntimeException("parseTerm(): Does not match to grammer!");
-            node.right = parseFactor();
+            if(tokenizer.peek().type() == Token.Type.MULT || tokenizer.peek().type() == Token.Type.DIV) {
+                node.right = parseTerm();
+            } else {
+                node.right = parseFactor();
+            }
         }
 		return node;
 	}
