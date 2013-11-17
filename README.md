@@ -10,8 +10,7 @@ For each assignment there will be this structure.
 
 ------
 
-assignment 0
-Here comes the description ...
+<h3>assignment 0</h3> Syntax, Parsers and Semantics
 
 ------
 
