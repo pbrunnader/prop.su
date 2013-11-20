@@ -9,7 +9,7 @@
 
 class YourParserImpl implements Parser {
 	
-	private Tokenizer tokenizer;
+    private Tokenizer tokenizer;
 
     public YourParserImpl(Tokenizer to) {
         this.tokenizer = to;
@@ -28,56 +28,73 @@ class YourParserImpl implements Parser {
         } else {
         	    throw new RuntimeException("parse(): No valid 'IDENTIFIER' or 'EQ' given!");
         }
+        if(tokenizer.current().type() != Token.Type.EOF) 
+            throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.EOF + ".");
         return node;
     }
 
-	private Node parseExpression() {
-		ExpressionNode node = new ExpressionNode();
-		node.left = parseTerm();
+    private Node parseExpression() {
+        ExpressionNode node = new ExpressionNode();
+        if(tokenizer.current().type() != Token.Type.NUMBER && tokenizer.current().type() != Token.Type.LEFT_PAREN )
+            throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.LEFT_PAREN + "' or '" + Token.Type.NUMBER + "'.");
+        node.left = parseTerm();
         if (tokenizer.current().type() == Token.Type.PLUS || tokenizer.current().type() == Token.Type.MINUS) {
-		    node.operator = tokenizer.current().text();
+            node.operator = tokenizer.current().text();
             tokenizer.next();
-            if(tokenizer.peek().type() == Token.Type.PLUS || tokenizer.peek().type() == Token.Type.MINUS || tokenizer.current().type() == Token.Type.LEFT_PAREN) {
+            if (tokenizer.peek().type() == Token.Type.PLUS || tokenizer.peek().type() == Token.Type.MINUS) {
                 node.right = parseExpression();
+            } else if (tokenizer.current().type() == Token.Type.LEFT_PAREN) {
+                node.right = parseExpression();
+                if(tokenizer.current().type() != Token.Type.RIGHT_PAREN && tokenizer.current().type() != Token.Type.EOF)
+                    throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.MULT + "', '" + Token.Type.DIV + "', '" + Token.Type.PLUS + "'or '" + Token.Type.MINUS + "'.");
             } else {
                 node.right = parseTerm();
             }
-        }
+        }    
         return node;
-	}
+    }
 
-	private Node parseTerm() {
-		TermNode node = new TermNode();
-		node.left = parseFactor();
+    private Node parseTerm() {
+        TermNode node = new TermNode();
+        if(tokenizer.current().type() != Token.Type.NUMBER && tokenizer.current().type() != Token.Type.LEFT_PAREN )
+            throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.LEFT_PAREN + "' or '" + Token.Type.NUMBER + "'.");
+        node.left = parseFactor();
         if (tokenizer.current().type() == Token.Type.MULT || tokenizer.current().type() == Token.Type.DIV) {
             node.operator = tokenizer.current().text();
             tokenizer.next();
-            if(tokenizer.peek().type() == Token.Type.MULT || tokenizer.peek().type() == Token.Type.DIV || tokenizer.current().type() == Token.Type.LEFT_PAREN) {
+            if (tokenizer.peek().type() == Token.Type.MULT || tokenizer.peek().type() == Token.Type.DIV) {
                 node.right = parseTerm();
+            } else if(tokenizer.current().type() == Token.Type.LEFT_PAREN) {
+                node.right = parseTerm();
+                if(tokenizer.current().type() != Token.Type.RIGHT_PAREN && tokenizer.current().type() != Token.Type.EOF)
+                    throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.MULT + "', '" + Token.Type.DIV + "', '" + Token.Type.PLUS + "'or '" + Token.Type.MINUS + "'.");
             } else {
                 node.right = parseFactor();
             }
-        }
-		return node;
-	}
+        }       
+        return node;
+    }
 
-	private Node parseFactor() {
-		FactorNode node = new FactorNode();
-		if(tokenizer.current().type() == Token.Type.LEFT_PAREN) {
-             tokenizer.next();
-			node.node = parseExpression();
+    private Node parseFactor() {
+        FactorNode node = new FactorNode();
+        if (tokenizer.current().type() == Token.Type.LEFT_PAREN) {
             tokenizer.next();
-		} else if (tokenizer.current().type() == Token.Type.NUMBER) {
-			node.node = parseNumber();
+            node.node = parseExpression();
+            if(tokenizer.current().type() != Token.Type.RIGHT_PAREN)
+                throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.RIGHT_PAREN + "'.");
+            tokenizer.next();
+        } else if (tokenizer.current().type() == Token.Type.NUMBER) {
+            node.node = parseNumber();
+        } else {
+            throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "'.");
         }
-		return node;
-	}
+        return node;
+    }
 	
-	private Node parseNumber() {
-		NumberNode node = new NumberNode();
-		node.value = tokenizer.current().value();
+    private Node parseNumber() {
+        NumberNode node = new NumberNode();
+        node.value = tokenizer.current().value();
         tokenizer.next();
-		return node;		
-	}
-
+        return node;		
+    }
 }
