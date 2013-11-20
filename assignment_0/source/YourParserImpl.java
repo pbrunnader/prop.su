@@ -48,7 +48,7 @@ class YourParserImpl implements Parser {
                 if(tokenizer.current().type() != Token.Type.RIGHT_PAREN && tokenizer.current().type() != Token.Type.EOF)
                     throw new RuntimeException("Error: Unexpected value given '" + tokenizer.current().type() + "' instead of '" + Token.Type.MULT + "', '" + Token.Type.DIV + "', '" + Token.Type.PLUS + "'or '" + Token.Type.MINUS + "'.");
             } else {
-                node.right = parseTerm();
+                node.right = parseExpression();
             }
         }    
         return node;
