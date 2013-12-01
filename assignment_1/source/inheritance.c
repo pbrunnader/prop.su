@@ -71,7 +71,7 @@ void* invoke(void* receiver, char* methodname, int argnum, void* argvalue){
         void (*fn)(void*,void*);
         fn = method->method;
         (*fn)(obj,argvalue);
-    } else{
+    } else {
         printf("ERROR: To many arguments given '%i'",argnum);
     }
 
