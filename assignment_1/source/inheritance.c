@@ -42,6 +42,7 @@ void printMsg(Object* self){
 void setMsg(Object* self, char* msg) {
     self->msg = msg;
 }
+
 void* invoke(void* receiver, char* methodname, int argnum, void* argvalue){
     Object* obj = receiver;
     Class* class = obj->class;
