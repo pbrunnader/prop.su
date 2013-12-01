@@ -18,7 +18,7 @@
 
 typedef struct _Method
 {
-    void* method;
+    void *method;
     char* name;
     int argnum;
     void* next;
@@ -39,37 +39,42 @@ void printMsg(Object* self){
     puts(self->msg);
 }
 
-void setMsg(Object* self, char* msg){
+void setMsg(Object* self, char* msg) {
     self->msg = msg;
 }
 void* invoke(void* receiver, char* methodname, int argnum, void* argvalue){
     Object* obj = receiver;
     Class* class = obj->class;
     Method* method = class->firstMethod;
-    
+
     while (method != NULL) {
         if(method->name == methodname && method->argnum == argnum) {
-            printf("FOUND: ");
             break;
         }
-        
+
         method = method->next;
         if(method == NULL) {
            if(class->super != NULL) {
                 class = class->super;
                 method = class->firstMethod;
             }else{
-                printf("NOT FOUND: ");
                 break;
             }
         }
     }
 
-    // void (*functionName)() = NULL;
-    // functionName = &method->method;
-    // functionName();
 
-    printf("%i, %s, %i, %s \n", &method->method, methodname, argnum, argvalue);
+    if(argnum == 0) {
+        void (*fn)(void*);
+        fn = method->method;
+        (*fn)(obj);
+    } else if(argnum == 1) { 
+        void (*fn)(void*,void*);
+        fn = method->method;
+        (*fn)(obj,argvalue);
+    }
+
+    return NULL;
 }
 
 
