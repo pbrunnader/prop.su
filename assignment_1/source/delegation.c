@@ -33,7 +33,7 @@ void printMsg(Object* self){
 }
 
 void printMsgWithDots(Object* self){
-    printf("%s And I say good bye as well!",self->attribute);
+    printf("%s And I say good bye as well!\n",self->attribute);
 }
 
 void* invoke(void* receiver, char* functionname, int argnum, void* argvalue) {
