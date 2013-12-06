@@ -1,5 +1,5 @@
 /**
- * This is the "assignment 0" for the course "Programming languages and Paradigms" 
+ * This is the "assignment 1" for the course "Programming languages and Paradigms" 
  * at the Stockholm University 
  *
  * assigment 1
@@ -63,10 +63,12 @@ void* invoke(void* receiver, char* functionname, int argnum, void* argvalue) {
         }
     }
 
+    /* call of matching function with NO arguments */
     if(argnum == 0) {
         void (*fn)(void*);
         fn = function->function;
         (*fn)(rec);
+    /* call of matching function with ONE arguments */
     } else if(argnum == 1) { 
         void (*fn)(void*,void*);
         fn = function->function;
@@ -79,26 +81,31 @@ void* invoke(void* receiver, char* functionname, int argnum, void* argvalue) {
 }
 
 int main(int argc, char *argv[]) {
+    /* definition of a 'printMsg' function */
     Function func2;
     func2.function = (FUNCTION) printMsgWithDots;
     func2.name = "printMsg";
     func2.argnum = 0;
 
+    /* definition of second 'printMsg' function */
     Function func1;
     func1.function = (FUNCTION) printMsg;
     func1.name = "printMsg";
     func1.argnum = 0;
 
+    /* definition of the root-object "oldRect" */
     Object oldRect;
     oldRect.attribute = "Hello World by 'oldRect'!";
     oldRect.function = NULL;
     oldRect.proto = NULL;
     
+    /* definition of the object "newRect" */
     Object newRect;
     newRect.attribute = "Hello World by 'newRect'!";
     newRect.function = NULL;
     newRect.proto = NULL;
     
+    /* definition of the newRect's prototype -> oldRect */
     newRect.proto = &oldRect;
 
     /* Now the important part */
@@ -110,7 +117,7 @@ int main(int argc, char *argv[]) {
     invoke(&oldRect, "printMsg", 0, NULL);
     invoke(&newRect, "printMsg", 0, NULL);
     
-    /* Add the function to the  */
+    /* Add the other function to the child-object -> newRect */
     printf("// Assigning different 'printMsg' function to child-object.\n");
     newRect.function = &func2;
     

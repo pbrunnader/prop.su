@@ -1,5 +1,5 @@
 /**
- * This is the "assignment 0" for the course "Programming languages and Paradigms" 
+ * This is the "assignment 1" for the course "Programming languages and Paradigms" 
  * at the Stockholm University 
  *
  * assigment 1
@@ -69,7 +69,7 @@ void* invoke(void* receiver, char* methodname, int argnum, void* argvalue) {
         }
     }
     
-    /* call of matching method with no arguments */
+    /* call of matching method with NO arguments */
     if(argnum == 0) {
         void (*fn)(void*);
         fn = method->method;
