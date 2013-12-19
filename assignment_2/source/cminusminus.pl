@@ -1,35 +1,35 @@
 % This is a prolog source code.
 
 
-run(Program,ParseTree) :-
+run(Program) :-
     parse(ParseTree,Program,[]).
 
 % PARSE
-parse(start(X)) --> begin, statements(X), end.
+parse(root(X)) --> begin, statements(X), end.
 
-statements(group(X,Y)) --> statement(X),statements(Y).
+statements(groupNode(X,Y)) --> statement(X),statements(Y).
 statements(X) --> statement(X).
 statement(X) --> read(X)|write(X)|assign(X)|block(X)|while(X).
 
-read(read(X)) --> readToken, [X], var(X).
-write(write(X)) --> writeToken, [X], expression(X).
-assign(assign(X,Y)) --> var(X), assignToken, expression(Y).
+read(readNode(X)) --> readToken, var(X).
+write(writeNode(X)) --> writeToken, expression(X).
+assign(assignNode(X,Y)) --> var(X), assignToken, expression(Y).
 
-block(block(X)) --> begin, statements(X), end.
-while(while(X)) --> whileToken, expression(X), operator(X), expression(X), block(X).
+block(blockNode(X)) --> begin, statements(X), end.
+while(whileNode(W,X,Y,Z)) --> whileToken, expression(W), operator(X), expression(Y), block(Z).
 
-operator(operator(X)) --> operatorTocken(o).
+operator(operatorNode(X)) --> operatorToken(o).
 
 expression(Z) --> num(Z)|var(Z).
-expression(plus(X,Y)) --> [X], {atomic(X)}, plusToken, expression(Y).
-expression(minus(X,Y)) --> [X], {atomic(X)}, minusToken, expression(Y).
+expression(plusNode(X,Y)) --> [X], {atomic(X)}, plusToken, expression(Y).
+expression(minusNode(X,Y)) --> [X], {atomic(X)}, minusToken, expression(Y).
 
-num(num(X)) --> [X],{number(X)}.
-var(var(X)) --> [X],{atom(X)}.
+num(numNode(X)) --> [X],{number(X)}.
+var(varNode(X)) --> [X],{atom(X)}.
 
 
 % EXECUTE
-
+% execute(root(X),V,_V).
 
 
 
@@ -48,23 +48,23 @@ loopToken --> ['loop'].
 minusToken --> ['-'].
 plusToken --> ['+'].
 
-operatorTocken(o) --> [<].
-operatorTocken(o) --> [>].
-operatorTocken(o) --> [<=].
-operatorTocken(o) --> [>=].
-operatorTocken(o) --> [=].
+operatorToken(o) --> [<].
+operatorToken(o) --> [>].
+operatorToken(o) --> [<=].
+operatorToken(o) --> [>=].
+operatorToken(o) --> [=].
 
 
 
 
 
 % expr_value("100", V).
-% run([begin,while,a,<,10,begin,a,:=,a,+,1,write,a,end,end],X).
+% run([begin,write,b,end]).
 % run([begin,a,:=,1,+,2,b,:=,a,-,3,end],X).
 % run([begin,while,1,<,2,a,end]).
 % run([begin,write,abc,end]).
 % run([begin,1,begin,a,:=,1,end,end]).
-% run([begin,a,:=,1,+,2,end]).
+% run([begin,while,a,<,10,begin,a,:=,1,+,2,end,write,a,end]).
 % run([begin,a,:=,1,+,2,+,3,end]).
 % run([begin,a,:=,1,+,b,-,3,end]).
 % run([begin,end]).
