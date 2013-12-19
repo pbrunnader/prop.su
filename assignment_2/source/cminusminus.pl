@@ -1,16 +1,14 @@
 % This is a prolog source code.
 
 
-run(Program) :-
+run(Program,ParseTree) :-
     parse(ParseTree,Program,[]).
 
+% PARSE
 parse(start(X)) --> begin, statements(X), end.
 
 statements(group(X,Y)) --> statement(X),statements(Y).
 statements(X) --> statement(X).
-% TEST !!!
-statement(X) --> [X], {atomic(X)}.
-
 statement(X) --> read(X)|write(X)|assign(X)|block(X)|while(X).
 
 read(read(X)) --> readToken, [X], var(X).
@@ -22,19 +20,17 @@ while(while(X)) --> whileToken, expression(X), operator(X), expression(X), block
 
 operator(operator(X)) --> operatorTocken(o).
 
-
-
 expression(Z) --> num(Z)|var(Z).
-% ACHTUNG !!! atomic
 expression(plus(X,Y)) --> [X], {atomic(X)}, plusToken, expression(Y).
 expression(minus(X,Y)) --> [X], {atomic(X)}, minusToken, expression(Y).
 
-
-
-
-
 num(num(X)) --> [X],{number(X)}.
 var(var(X)) --> [X],{atom(X)}.
+
+
+% EXECUTE
+
+
 
 
 
@@ -63,7 +59,8 @@ operatorTocken(o) --> [=].
 
 
 % expr_value("100", V).
-% run([begin,while,a,<,10,begin,a,:=,a,+,1,write,a,end,end]).
+% run([begin,while,a,<,10,begin,a,:=,a,+,1,write,a,end,end],X).
+% run([begin,a,:=,1,+,2,b,:=,a,-,3,end],X).
 % run([begin,while,1,<,2,a,end]).
 % run([begin,write,abc,end]).
 % run([begin,1,begin,a,:=,1,end,end]).
