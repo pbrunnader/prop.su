@@ -1,8 +1,13 @@
 % This is a prolog source code.
 
 
-run(Program) :-
-    parse(ParseTree,Program,[]).
+run(Program,_Variable) :-
+    write('Parsing program ...'),
+    parse(ParseTree,Program,[]),
+    write(' parsetree done. \n'),
+    write(ParseTree),
+    write('\nExecute ...'),
+    execute(ParseTree,[[a,1],[d,2],[c,3]],_Variable).
 
 % PARSE
 parse(root(X)) --> begin, statements(X), end.
@@ -29,7 +34,19 @@ var(varNode(X)) --> [X],{atom(X)}.
 
 
 % EXECUTE
-% execute(root(X),V,_V).
+execute(root(X),V,_V) :- execute(X,V,_V).
+
+execute(readNode(varNode(X)),V,_V) :- write(X), write(':'), read(TMP), assign(X,TMP,V,_V).
+
+
+assign(Name,Value,V,_V) :- deleteVar(Name,V,T), appendVar(Name,Value,T,_V).
+
+deleteVar(Name,[],[]). 
+deleteVar(Name,[[Name|_]|V],_V) :- deleteVar(Name,V,_V).
+deleteVar(Name,[E|V],[E|_V]) :- Name \== [NotName|E], deleteVar(Name,V,_V).
+
+appendVar(Name,Value,V,_V) :- append(V,[[Name,Value]],_V).
+
 
 
 
@@ -59,7 +76,7 @@ operatorToken(o) --> [=].
 
 
 % expr_value("100", V).
-% run([begin,write,b,end]).
+% run([begin,read,b,end], V).
 % run([begin,a,:=,1,+,2,b,:=,a,-,3,end],X).
 % run([begin,while,1,<,2,a,end]).
 % run([begin,write,abc,end]).
