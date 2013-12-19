@@ -14,8 +14,8 @@ expression(Num, Expression).
 variable(X):-atom(X).
 
 expression(Z) --> num(Z).
-expression(Z) --> num(X), [+], expression(Y), {Z is X+Y}.
-expression(Z) --> num(X), [-], expression(Y), {Z is X-Y}.
+expression(plus(Z)) --> num(X), [+], expression(Y), {Z is X+Y}.
+expression(minus(Z)) --> num(X), [-], expression(Y), {Z is X-Y}.
 num(D) --> [D], {number(D)}.
 
 expression_value(L, V) :- expression(V, L, []).
