@@ -26,8 +26,10 @@ while(whileNode(W,X,Y,Z)) --> whileToken, expression(W), operator(X), expression
 operator(operatorNode(X)) --> operatorToken(o).
 
 expression(Z) --> num(Z)|var(Z).
-expression(plusNode(X,Y)) --> [X], {atomic(X)}, plusToken, expression(Y).
-expression(minusNode(X,Y)) --> [X], {atomic(X)}, minusToken, expression(Y).
+expression(plusNode(X,Y)) --> num(X), plusToken, expression(Y).
+expression(plusNode(X,Y)) --> var(X), plusToken, expression(Y).
+expression(minusNode(X,Y)) --> num(X), minusToken, expression(Y).
+expression(minusNode(X,Y)) --> var(X), minusToken, expression(Y).
 
 num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
@@ -37,6 +39,25 @@ var(varNode(X)) --> [X],{atom(X)}.
 execute(root(X),V,_V) :- execute(X,V,_V).
 
 execute(readNode(varNode(X)),V,_V) :- write(X), write(':'), read(TMP), assign(X,TMP,V,_V).
+execute(writeNode(numNode(X)),V,_V) :- write(X), append(V,[],_V), nl.
+execute(writeNode(varNode(X)),V,_V) :- write(X), append(V,[],_V), nl.
+execute(assignNode(varNode(X),numNode(Y)),V,_V) :- assign(X,Y,V,_V).
+execute(assignNode(varNode(X),Y),V,_V) :- execute(Y,Result,V,T), assign(X,Result,T,_V).
+
+execute(plusNode(numNode(X),Y),Result,V,_V) :- execute(Y,Z,V,_V), Result is X + Z, append(V,[],_V).
+execute(minusNode(numNode(X),Y),Result,V,_V) :- execute(Y,Z,V,_V), Result is X - Z, append(V,[],_V).
+
+execute(numNode(X),Result,V,_V) :- Result is X, append(V,[],_V).
+
+
+
+
+assigned(Name,[],0,[]).
+assigned(Name,[[Name|E]|V],[[Value|E]|V],_V) :- assigned(Name,V,Value,_V).
+
+
+% assigned(Name,Value,[E|V],[E|_V]) :- Name == [Name|E].
+% deleteVar(Name,[E|V],[E|_V]) :- Name \== [NotName|E], deleteVar(Name,V,_V).
 
 
 assign(Name,Value,V,_V) :- deleteVar(Name,V,T), appendVar(Name,Value,T,_V).
@@ -76,7 +97,7 @@ operatorToken(o) --> [=].
 
 
 % expr_value("100", V).
-% run([begin,read,b,end], V).
+% run([begin,a,:=,8,-,4,-,2,end], V).
 % run([begin,a,:=,1,+,2,b,:=,a,-,3,end],X).
 % run([begin,while,1,<,2,a,end]).
 % run([begin,write,abc,end]).
