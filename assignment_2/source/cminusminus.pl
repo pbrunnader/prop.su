@@ -7,7 +7,7 @@ run(Program,_Variable) :-
     write(' parsetree done. \n'),
     write(ParseTree),
     write('\nExecute ...'),
-    execute(ParseTree,[],_Variable),
+    executeRoot(ParseTree,[],_Variable),
     write(' done. \n').
 
 % PARSE
@@ -40,7 +40,7 @@ var(varNode(X)) --> [X],{atom(X)}.
 
 
 % EXECUTE
-execute(root(X),V,_V) :- execute(X,V,_V).
+executeRoot(root(X),V,_V) :- execute(X,V,_V).
 
 execute(groupNode(X,Y),V,_V) :- execute(Y,V,T), execute(X,T,_V).
 
@@ -59,11 +59,14 @@ execute(numNode(X),Result,V,_V) :- Result is X, append(V,[],_V).
 
 assign(Name,Value,V,_V) :- removeVar(Name,V,T), appendVar(Name,Value,T,_V).
 
-% assigned(g,Value,[[a,11],[b,9],[c,3]],Liste).
-assigned(Name,Value,[],[]).
+% assigned(a,Value,[[a,11],[b,9],[c,3]],Liste).
+assigned(Name,Value,[],[]) :- number(Value).
+assigned(Name,Value,[],[]) :- \+ (number(Value)), Value is 0.
 assigned(Name,Value,[[Name|E]|V],_V) :- assigned(E,Value), assigned(Name,Value,V,T), appendVar(Name,Value,T,_V).
 assigned(Name,Value,[E|V],[E|_V]) :- assigned(Name,Value,V,_V).
-assigned([Value|E_],Value).
+assigned([Value|E],Value).
+
+
 
 removeVar(_,[],[]). 
 removeVar(Name,[[Name|_]|V],_V) :- removeVar(Name,V,_V).
