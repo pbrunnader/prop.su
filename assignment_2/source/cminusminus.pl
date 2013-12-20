@@ -46,26 +46,28 @@ execute(groupNode(X,Y),V,_V) :- execute(Y,V,T), execute(X,T,_V).
 
 execute(readNode(varNode(X)),V,_V) :- write(X), write(':'), read(TMP), assign(X,TMP,V,_V).
 execute(writeNode(numNode(X)),V,_V) :- write(X), append(V,[],_V), nl.
-execute(writeNode(varNode(X)),V,_V) :- write(X), append(V,[],_V), nl.
+execute(writeNode(varNode(X)),V,_V) :- assigned(X,Result,V,T), write(Result), append(T,[],_V), nl.
 execute(assignNode(varNode(X),numNode(Y)),V,_V) :- assign(X,Y,V,_V).
 execute(assignNode(varNode(X),Y),V,_V) :- execute(Y,Result,V,T), assign(X,Result,T,_V).
 
 execute(plusNode(numNode(X),Y),Result,V,_V) :- execute(Y,Z,V,_V), Result is X + Z, append(V,[],_V).
+execute(plusNode(varNode(X),Y),Result,V,_V) :- assigned(X,_X,V,_V), execute(Y,Z,V,_V), Result is _X + Z, append(V,[],_V).
 execute(minusNode(numNode(X),Y),Result,V,_V) :- execute(Y,Z,V,_V), Result is X - Z, append(V,[],_V).
+execute(minusNode(varNode(X),Y),Result,V,_V) :- assigned(X,_X,V,_V), execute(Y,Z,V,_V), Result is _X - Z, append(V,[],_V).
 
 execute(numNode(X),Result,V,_V) :- Result is X, append(V,[],_V).
+execute(varNode(X),Result,V,_V) :- assigned(X,Result,V,_V), append(V,[],_V).
 
 
 
 assign(Name,Value,V,_V) :- removeVar(Name,V,T), appendVar(Name,Value,T,_V).
 
-% assigned(a,Value,[[a,11],[b,9],[c,3]],Liste).
+% assigned(f,Value,[[a,11],[b,9],[c,3]],Liste).
 assigned(Name,Value,[],[]) :- number(Value).
 assigned(Name,Value,[],[]) :- \+ (number(Value)), Value is 0.
 assigned(Name,Value,[[Name|E]|V],_V) :- assigned(E,Value), assigned(Name,Value,V,T), appendVar(Name,Value,T,_V).
 assigned(Name,Value,[E|V],[E|_V]) :- assigned(Name,Value,V,_V).
 assigned([Value|E],Value).
-
 
 
 removeVar(_,[],[]). 
@@ -103,11 +105,11 @@ operatorToken(o) --> [=].
 
 
 % expr_value("100", V).
-% run([begin,a,:=,8,b,:=,10,+,2,+,2,c,:=,3,a,:=,111,end], V).
+% run([begin,a,:=,2,b,:=,10,+,a,-,a,b,:=,c,end], V).
 % run([begin,a,:=,8,b,:=,2,c,:=,1,a,:=,7,end], V).
 % run([begin,a,:=,1,+,2,b,:=,a,-,3,end],X).
 % run([begin,while,1,<,2,a,end]).
-% run([begin,write,abc,end]).
+% run([begin,write,a,end], V).
 % run([begin,1,begin,a,:=,1,end,end]).
 % run([begin,while,a,<,10,begin,a,:=,1,+,2,end,write,a,end]).
 % run([begin,a,:=,1,+,2,+,3,end]).
