@@ -7,12 +7,13 @@ run(Program,_Variable) :-
     write(' parsetree done. \n'),
     write(ParseTree),
     write('\nExecute ...'),
-    execute(ParseTree,[[a,1],[d,2],[c,3]],_Variable).
+    execute(ParseTree,[],_Variable),
+    write(' done. \n').
 
 % PARSE
 parse(root(X)) --> begin, statements(X), end.
 
-statements(groupNode(X,Y)) --> statement(X),statements(Y).
+statements(groupNode(X,Y)) --> statement(Y),statements(X).
 statements(X) --> statement(X).
 statement(X) --> read(X)|write(X)|assign(X)|block(X)|while(X).
 
@@ -23,9 +24,9 @@ assign(assignNode(X,Y)) --> var(X), assignToken, expression(Y).
 block(blockNode(X)) --> begin, statements(X), end.
 while(whileNode(W,X,Y,Z)) --> whileToken, expression(W), operator(X), expression(Y), block(Z).
 
-operator(operatorNode(X)) --> operatorToken(o).
+operator(operatorNode(_)) --> operatorToken(o).
 
-expression(Z) --> num(Z)|var(Z).
+expression(X) --> num(X)|var(X).
 expression(plusNode(X,Y)) --> num(X), plusToken, expression(Y).
 expression(plusNode(X,Y)) --> var(X), plusToken, expression(Y).
 expression(minusNode(X,Y)) --> num(X), minusToken, expression(Y).
@@ -35,8 +36,13 @@ num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
 
 
+
+
+
 % EXECUTE
 execute(root(X),V,_V) :- execute(X,V,_V).
+
+execute(groupNode(X,Y),V,_V) :- execute(Y,V,T), execute(X,T,_V).
 
 execute(readNode(varNode(X)),V,_V) :- write(X), write(':'), read(TMP), assign(X,TMP,V,_V).
 execute(writeNode(numNode(X)),V,_V) :- write(X), append(V,[],_V), nl.
@@ -51,20 +57,17 @@ execute(numNode(X),Result,V,_V) :- Result is X, append(V,[],_V).
 
 
 
+assign(Name,Value,V,_V) :- removeVar(Name,V,T), appendVar(Name,Value,T,_V).
 
-assigned(Name,[],0,[]).
-assigned(Name,[[Name|E]|V],[[Value|E]|V],_V) :- assigned(Name,V,Value,_V).
+% assigned(g,Value,[[a,11],[b,9],[c,3]],Liste).
+assigned(Name,Value,[],[]).
+assigned(Name,Value,[[Name|E]|V],_V) :- assigned(E,Value), assigned(Name,Value,V,T), appendVar(Name,Value,T,_V).
+assigned(Name,Value,[E|V],[E|_V]) :- assigned(Name,Value,V,_V).
+assigned([Value|E_],Value).
 
-
-% assigned(Name,Value,[E|V],[E|_V]) :- Name == [Name|E].
-% deleteVar(Name,[E|V],[E|_V]) :- Name \== [NotName|E], deleteVar(Name,V,_V).
-
-
-assign(Name,Value,V,_V) :- deleteVar(Name,V,T), appendVar(Name,Value,T,_V).
-
-deleteVar(Name,[],[]). 
-deleteVar(Name,[[Name|_]|V],_V) :- deleteVar(Name,V,_V).
-deleteVar(Name,[E|V],[E|_V]) :- Name \== [NotName|E], deleteVar(Name,V,_V).
+removeVar(_,[],[]). 
+removeVar(Name,[[Name|_]|V],_V) :- removeVar(Name,V,_V).
+removeVar(Name,[E|V],[E|_V]) :- Name \== [_|E], removeVar(Name,V,_V). 
 
 appendVar(Name,Value,V,_V) :- append(V,[[Name,Value]],_V).
 
@@ -97,7 +100,8 @@ operatorToken(o) --> [=].
 
 
 % expr_value("100", V).
-% run([begin,a,:=,8,-,4,-,2,end], V).
+% run([begin,a,:=,8,b,:=,10,+,2,+,2,c,:=,3,a,:=,111,end], V).
+% run([begin,a,:=,8,b,:=,2,c,:=,1,a,:=,7,end], V).
 % run([begin,a,:=,1,+,2,b,:=,a,-,3,end],X).
 % run([begin,while,1,<,2,a,end]).
 % run([begin,write,abc,end]).
