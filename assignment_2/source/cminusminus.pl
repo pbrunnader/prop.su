@@ -38,6 +38,9 @@ num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
 
 
+
+
+
 % EXECUTION PART
 
 % root
@@ -77,11 +80,16 @@ execute(varNode(X),Result,V,_V) :- assigned(X,Result,V,_V), append(V,[],_V).
 % Managing the variables, save, read and remove
 assign(Name,Value,V,_V) :- removeVar(Name,V,T), appendVar(Name,Value,T,_V).
 
+
 assigned(_,Value,[],[]) :- number(Value).
 assigned(Name,Value,[[Name|E]|V],_V) :- assigned(E,Value), assigned(Name,Value,V,T), appendVar(Name,Value,T,_V).
 assigned(Name,Value,[E|V],[E|_V]) :- assigned(Name,Value,V,_V).
-assigned(Name,Value,V,_V) :- Value is 0.
+% assigned(Name,Value,V,_V) :- Value is 0.
 assigned([Value|_],Value).
+
+
+isAssigned(Name,[[Name|E]|V],_V).
+% isAssigned(c,[],[]).
 
 removeVar(_,[],[]). 
 removeVar(Name,[[Name|_]|V],_V) :- removeVar(Name,V,_V).
@@ -126,8 +134,8 @@ minusToken --> ['-'].
 plusToken --> ['+'].
 
 
-% run([begin,write,b,write,a,b,:=,10,write,b,write,a,end],V).
-% run([begin,while,a,<,5,begin,write,a,a,:=,a,+,1,end,end],V).
+% run([begin,b,:=,1,a,:=,0,write,b,write,a,b,:=,10,write,b,write,a,end],V).
+% run([begin,a,:=,0,while,a,<,5,begin,write,a,a,:=,a,+,1,end,end],V).
 % run([begin,a,:=,0,while,5,>,10,a,:=,a,+,1,write,a,end], V).
 % run([begin,a,:=,2,b,:=,100,write,10,-,a,-,a,end], V).
 % run([begin,a,:=,8,b,:=,2,c,:=,1,a,:=,7,end], V).
