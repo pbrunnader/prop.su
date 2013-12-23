@@ -84,7 +84,7 @@ assign(Name,Value,V,_V) :- removeVar(Name,V,T), appendVar(Name,Value,T,_V).
 assigned(_,Value,[],[]) :- number(Value).
 assigned(Name,Value,[[Name|E]|V],_V) :- assigned(E,Value), assigned(Name,Value,V,T), appendVar(Name,Value,T,_V).
 assigned(Name,Value,[E|V],[E|_V]) :- assigned(Name,Value,V,_V).
-% assigned(Name,Value,V,_V) :- Value is 0.
+assigned(Name,Value,V,_V) :- Value is 0,  appendVar(Name,0,V,_).
 assigned([Value|_],Value).
 
 
