@@ -143,9 +143,10 @@ plusToken --> ['+'].
 % run([begin,b,:=,10,write,a,write,b,end], V).
 % run([begin,1,begin,a,:=,1,end,end]).
 % run([begin,while,a,<,10,begin,a,:=,1,+,2,end,write,a,end]).
-% run([begin,a,:=,1,+,2,+,3,end]).
-% run([begin,a,:=,1,+,b,-,3,end]).
-% run([begin,end]).
+% run([begin,a,:=,1,+,2,+,3,b,end]).
+% run([begin,c,:=,30,a,:=,1,+,b,write,b,end],V).
+% run([begin,write,a,end], V).
+% run([begin,write,a,a,:=,33,write,a,write,b,end], V).
 
 
 % execute(whileNode(varNode(a),operatorNode(<),numNode(10),assignNode(varNode(b),numNode(123))),[[a,6]],Y).
