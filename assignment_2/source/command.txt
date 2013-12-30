@@ -1,0 +1,35 @@
+% while loop like described
+run([begin,
+        a,:=,5,
+        while,10,>,a,
+        begin,
+            a,:=,a,+,1,
+            write,a,
+        end,
+    end]).
+
+% while with if
+run([begin,
+        a,:=,3,
+        b,:=,1,
+        while,20,>,a,
+        begin,
+            if,a,<,8,
+            begin,
+                write,a,
+            end,
+            a,:=,a,+,b,
+        end,
+        write,a,
+    end]).
+    
+% expression with +,-,* and / but no parenthesis used
+run([begin,
+        read,a,
+        b,:=,5,
+        c,:=,a,-,3,+,b,
+        write,c,
+        x,:=,3,+,4,*,3,/,2,-,1,
+        write,x,
+    end]).
+    

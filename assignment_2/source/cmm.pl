@@ -10,14 +10,16 @@
 % 
 
 
-run(Program,_Variable) :-
+run(Program) :-
     write('Parsing program.'), nl,
     parse(ParseTree,Program,[]),
     write('Program correct and parsed.'), nl,
-    write(ParseTree), nl,
+    % write(ParseTree), nl,
     write('Execution start.'), nl,
     executeRoot(ParseTree,[],_Variable), nl,
-    write('Execution finished.').
+    write('Execution finished.'), nl.
+    % write('Assigned variables: '), nl,
+    % write(_Variable).
 
 % PARSING THE INPUT LIST
 parse(root(X)) --> beginToken, statements(X), endToken.
