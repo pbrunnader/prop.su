@@ -23,7 +23,7 @@ block(blockNode(X)) --> beginToken, statements(X), endToken.
 while(whileNode(W,X,Y,Z)) --> whileToken, expression(W), operator(X), expression(Y), statement(Z).
 if(ifNode(W,X,Y,Z)) --> ifToken, expression(W), operator(X), expression(Y), statement(Z).
 
-operator(operatorNode(X)) --> [<],{X = l}|[>],{X = g}|[<=],{X = le}|[>=],{X = ge}|[=],{X = e}. %|[!=],{X = n}.
+operator(operatorNode(X)) --> [>],{X = g}|[<],{X = l}|[<=],{X = le}|[>=],{X = ge}|[=],{X = e}. %|[!=],{X = n}.
 
 expression(X) --> term(X1), expr(X1,X).
 expr(X1,X) --> plusToken, term(X2), expr(plusNode(X1,X2),X). 
@@ -36,7 +36,7 @@ t(X1,X) --> multiToken, [X2], {number(X2)}, t(multiNode(X1,numNode(X2)),X); mult
 t(X1,X) --> divToken, [X2], {number(X2)}, t(divNode(X1,numNode(X2)),X); divToken, [X2], {atom(X2)}, t(divNode(X1,varNode(X2)),X).
 t(X,X) --> [].
 
-
+factor(X) --> expression(X).
 
 
 
@@ -62,7 +62,7 @@ execute(writeNode(varNode(X)),V,_V) :- assigned(X,Result,V,T), write(Result), ap
 execute(writeNode(X),V,_V) :- execute(X,Result,V,T), write(Result), append(T,[],_V), nl.
 
 % assigning
-% execute(assignNode(varNode(X),numNode(Y)),V,_V) :- assign(X,Y,V,_V), !.
+execute(assignNode(varNode(X),numNode(Y)),V,_V) :- assign(X,Y,V,_V), !.
 execute(assignNode(varNode(X),Y),V,_V) :- execute(Y,Result,V,T), assign(X,Result,T,_V).
 
 % execute the expression
@@ -108,21 +108,37 @@ removeVar(Name,[[Name|_]|V],_V) :- removeVar(Name,V,_V).
 removeVar(Name,[E|V],[E|_V]) :- Name \== [_|E], removeVar(Name,V,_V). 
 
 while(numNode(W),X,numNode(Y),_,V,_V) :- (condition(W,X,Y), throw('error: while-loop is infinite.'));(\+ (condition(W,X,Y)), write('warning: while-loop is never entered.'), nl), append(V,[],_V).
-while(W,X,Y,_,V,_V) :- execute(W,Value1,V,_), execute(Y,Value2,V,T), \+ (condition(Value1,X,Value2)), append(T,[],_V).
-while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V).
 
-if(W,X,Y,Z,V,_V) :- (execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,_V));append(V,[],_V).
+
+while(W,X,Y,Z,V,_V) :- (execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V));(write(V), append(V,[],_V)).
+
+
+% while(varNode(W),X,numNode(Y),Z,V,_V) :- (assigned(W,Value,V,T), condition(Value,X,Y), execute(Z,T,U), while(varNode(W),X,numNode(Y),Z,U,_V));append(V,[],_V), write('1. ').
+% while(numNode(W),X,varNode(Y),Z,V,_V) :- (assigned(Y,Value,V,T), condition(W,X,Value), execute(Z,T,U), while(numNode(W),X,varNode(Y),Z,U,_V));append(V,[],_V), write('2. ').
+% all expressions possible
+
+
+% while(varNode(W),X,numNode(Y),_,V,_V) :- assigned(W,Value,V,T), \+ (condition(Value,X,Y)), write('****'), !, append(V,[],_V).
+% while(varNode(W),X,numNode(Y),Z,V,_V) :- write(X), assigned(W,Value,V,T), condition(Value,X,Y), execute(Z,T,U), while(varNode(W),X,numNode(Y),Z,U,_V).
+% while(numNode(W),X,varNode(Y),_,V,_V) :- write(3), assigned(Y,Value,V,_), \+ (condition(W,X,Value)), append(V,[],_V).
+% while(numNode(W),X,varNode(Y),Z,V,_V) :- write(4), assigned(Y,Value,V,T), condition(W,X,Value), execute(Z,T,U), while(numNode(W),X,varNode(Y),Z,U,_V).
+
+% while(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), \+ (condition(Value1,X,Value2)), append(T,[],_V).
+% while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V).
+
+if(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), \+ (condition(Value1,X,Value2)), append(T,[],_V). 
+if(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,_V).
 
 num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
 
 % check if conditions are valid 
-condition(X,'l',Z) :- X < Z.
-condition(X,'g',Z) :- X > Z.
-condition(X,'le',Z) :- X =< Z.
-condition(X,'ge',Z) :- X >= Z.
-condition(X,'e',Z) :- X =:= Z.
-condition(X,'n',Z) :- \+ (X=:=Z). 
+condition(X,'l',Z) :- X < Z,!.
+condition(X,'g',Z) :- X > Z,!.
+% condition(X,'le',Z) :- X =< Z.
+% condition(X,'ge',Z) :- X >= Z.
+% condition(X,'e',Z) :- X =:= Z.
+% condition(X,'n',Z) :- \+ (X=:=Z). 
 
 
 % TERMINALE
@@ -141,17 +157,21 @@ minusToken --> ['-'].
 plusToken --> ['+'].
 multiToken --> ['*'].
 divToken --> ['/'].
+openToken --> ['('].
+closeToken --> [')'].
 
 
 % run([begin,b,:=,1,a,:=,0,write,b,write,a,b,:=,10,write,b,write,a,end],V).
-% run([begin,a,:=,0,while,a,<,5,+,4,begin,write,a,a,:=,a,+,1,end,end],V).
-% run([begin,a,:=,0,while,5,>,10,a,:=,a,+,1,write,a,end], V).
+% run([begin,a,:=,0,while,5,<,10,a,:=,a,+,1,write,a,end], V).
 % run([begin,begin,a,:=,8,b,:=,2,c,:=,1,a,:=,7,end,end], V).
-% run([begin,while,a,<,10,begin,a,:=,a,+,1,write,a,end,end],V).
+%%%% run([begin,a,:=,5,while,10,>,a,begin,a,:=,a,+,1,write,a,end,end],V).
+% run([begin,a,:=,10,while,a,>,5,begin,write,a,a,:=,a,-,1,end,end],V).
+
+
 % run([begin,b,:=,10,write,a,write,b,end], V).
 % run([begin,begin,a,:=,1,end,end],V).
-% run([begin,while,a,<,10,begin,a,:=,a,+,1,end,write,a,end],V).
-% run([begin,a,:=,1,+,2,+,3,end],V).
+% run([begin,a,:=,10,while,a,>,0,begin,if,a,<,5,begin,write,a,end,a,:=,a,-,1,end,write,a,end],V).
+% run([begin,a,:=,1,-,2,+,3,write,a,end],V).
 % run([begin,a,:=,3,if,a,<,10,b,:=,100,write,a,end], V).
 % run([begin,write,a,a,:=,33,write,a,+,2,end], V).
 % run([begin,a,:=,5,b,:=,100,-,a,*,a,write,10,end], V).
@@ -159,4 +179,5 @@ divToken --> ['/'].
 % run([begin,c,:=,3,-,2,+,1,read,a,b,:=,a,+,1,write,b,end],V).
 % run([begin,while,a,<,10,+,1,begin,a,:=,a,+,1,write,a,end,end],V).
 % run([begin,if,a,<,10,+,1,begin,a,:=,a,+,1,write,a,end,end],V).
+% run([begin,a,:=,11,*,2,+,7,end],V).
 
