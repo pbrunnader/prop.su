@@ -163,13 +163,6 @@ divToken --> ['/'].
 % run([begin,a,:=,5,b,:=,100,-,a,*,a,write,10,end], V).
 % run([begin,c,:=,30,a,:=,4,b,:=,c,+,5,-,a,end],V).
 % run([begin,c,:=,3,-,2,+,1,read,a,b,:=,a,+,1,write,b,end],V).
-
 % run([begin,while,a,<,10,+,1,begin,a,:=,a,+,1,write,a,end,end],V).
 % run([begin,if,a,<,10,+,1,begin,a,:=,a,+,1,write,a,end,end],V).
 
-% expr(X) --> [X1], {number(X1)}, restexpr(X1,X).
-% restexpr(X1,X) --> ['+'], [X2], {number(X2)}, restexpr(minus(X1,X2),X). 
-% restexpr(X1,X) --> ['-'], [X2], {number(X2)}, restexpr(minus(X1,X2),X). 
-% restexpr(X1,X) --> ['*'], [X2], {number(X2)}, restexpr(multiply(X1,X2),X). 
-% restexpr(X1,X) --> ['/'], [X2], {number(X2)}, restexpr(division(X1,X2),X). 
-% restexpr(X,X) --> [].
