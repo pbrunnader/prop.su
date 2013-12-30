@@ -109,35 +109,26 @@ removeVar(Name,[E|V],[E|_V]) :- Name \== [_|E], removeVar(Name,V,_V).
 
 while(numNode(W),X,numNode(Y),_,V,_V) :- (condition(W,X,Y), throw('error: while-loop is infinite.'));(\+ (condition(W,X,Y)), write('warning: while-loop is never entered.'), nl), append(V,[],_V).
 
+while(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), append(T,[],_V), \+ (condition(Value1,X,Value2)).
+while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,V,U), while(W,X,Y,Z,U,_V).
 
-while(W,X,Y,Z,V,_V) :- (execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V));(write(V), append(V,[],_V)).
+% while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,S,T), append(V,[],_V), \+ (condition(Value1,X,Value2)), !.
+% while(W,X,Y,Z,V,_V) :- execute(Z,V,U), while(W,X,Y,Z,U,_V).
 
+%% while(W,X,Y,Z,V,_V) :- (execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V));(append(V,[],_V)).
 
-% while(varNode(W),X,numNode(Y),Z,V,_V) :- (assigned(W,Value,V,T), condition(Value,X,Y), execute(Z,T,U), while(varNode(W),X,numNode(Y),Z,U,_V));append(V,[],_V), write('1. ').
-% while(numNode(W),X,varNode(Y),Z,V,_V) :- (assigned(Y,Value,V,T), condition(W,X,Value), execute(Z,T,U), while(numNode(W),X,varNode(Y),Z,U,_V));append(V,[],_V), write('2. ').
-% all expressions possible
-
-
-% while(varNode(W),X,numNode(Y),_,V,_V) :- assigned(W,Value,V,T), \+ (condition(Value,X,Y)), write('****'), !, append(V,[],_V).
-% while(varNode(W),X,numNode(Y),Z,V,_V) :- write(X), assigned(W,Value,V,T), condition(Value,X,Y), execute(Z,T,U), while(varNode(W),X,numNode(Y),Z,U,_V).
-% while(numNode(W),X,varNode(Y),_,V,_V) :- write(3), assigned(Y,Value,V,_), \+ (condition(W,X,Value)), append(V,[],_V).
-% while(numNode(W),X,varNode(Y),Z,V,_V) :- write(4), assigned(Y,Value,V,T), condition(W,X,Value), execute(Z,T,U), while(numNode(W),X,varNode(Y),Z,U,_V).
-
-% while(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), \+ (condition(Value1,X,Value2)), append(T,[],_V).
-% while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V).
-
-if(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), \+ (condition(Value1,X,Value2)), append(T,[],_V). 
-if(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,_V).
+if(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), append(T,[],_V), \+ (condition(Value1,X,Value2)). 
+if(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,T,_V).
 
 num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
 
 % check if conditions are valid 
-condition(X,'l',Z) :- X < Z,!.
-condition(X,'g',Z) :- X > Z,!.
-% condition(X,'le',Z) :- X =< Z.
-% condition(X,'ge',Z) :- X >= Z.
-% condition(X,'e',Z) :- X =:= Z.
+condition(X,'l',Z) :- X < Z.
+condition(X,'g',Z) :- X > Z.
+condition(X,'le',Z) :- X =< Z.
+condition(X,'ge',Z) :- X >= Z.
+condition(X,'e',Z) :- X =:= Z.
 % condition(X,'n',Z) :- \+ (X=:=Z). 
 
 
@@ -165,12 +156,12 @@ closeToken --> [')'].
 % run([begin,a,:=,0,while,5,<,10,a,:=,a,+,1,write,a,end], V).
 % run([begin,begin,a,:=,8,b,:=,2,c,:=,1,a,:=,7,end,end], V).
 %%%% run([begin,a,:=,5,while,10,>,a,begin,a,:=,a,+,1,write,a,end,end],V).
-% run([begin,a,:=,10,while,a,>,5,begin,write,a,a,:=,a,-,1,end,end],V).
+% run([begin,a,:=,10,while,5,<,a,begin,write,a,a,:=,a,-,1,end,end],V).
 
 
 % run([begin,b,:=,10,write,a,write,b,end], V).
 % run([begin,begin,a,:=,1,end,end],V).
-% run([begin,a,:=,10,while,a,>,0,begin,if,a,<,5,begin,write,a,end,a,:=,a,-,1,end,write,a,end],V).
+% run([begin,a,:=,3,b,:=,1,while,20,>,a,begin,if,a,<,8,begin,write,a,end,a,:=,a,+,b,end,write,a,end],V).
 % run([begin,a,:=,1,-,2,+,3,write,a,end],V).
 % run([begin,a,:=,3,if,a,<,10,b,:=,100,write,a,end], V).
 % run([begin,write,a,a,:=,33,write,a,+,2,end], V).
