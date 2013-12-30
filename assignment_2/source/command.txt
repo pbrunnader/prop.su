@@ -8,13 +8,13 @@ run([begin,
         end,
     end]).
 
-% while with if
+% while with if for the output
 run([begin,
         a,:=,3,
         b,:=,1,
         while,20,>,a,
         begin,
-            if,a,<,8,
+            if,a,<=,10,
             begin,
                 write,a,
             end,
@@ -33,3 +33,7 @@ run([begin,
         write,x,
     end]).
     
+% zero divisor not allowed  
+run([begin,
+    a,:=,5,/,0,
+    end]).
