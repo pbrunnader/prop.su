@@ -108,16 +108,10 @@ removeVar(Name,[[Name|_]|V],_V) :- removeVar(Name,V,_V).
 removeVar(Name,[E|V],[E|_V]) :- Name \== [_|E], removeVar(Name,V,_V). 
 
 while(numNode(W),X,numNode(Y),_,V,_V) :- (condition(W,X,Y), throw('error: while-loop is infinite.'));(\+ (condition(W,X,Y)), write('warning: while-loop is never entered.'), nl), append(V,[],_V).
-% while(varNode(W),X,numNode(Y),_,V,_V) :- assigned(W,Value,V,_), \+ (condition(Value,X,Y)), append(V,[],_V).
-% while(varNode(W),X,numNode(Y),Z,V,_V) :- assigned(W,Value,V,T), condition(Value,X,Y), execute(Z,T,U), while(varNode(W),X,numNode(Y),Z,U,_V).
-% while(numNode(W),X,varNode(Y),_,V,_V) :- assigned(Y,Value,V,_), \+ (condition(W,X,Value)), append(V,[],_V).
-% while(numNode(W),X,varNode(Y),Z,V,_V) :- assigned(Y,Value,V,T), condition(W,X,Value), execute(Z,T,U), while(numNode(W),X,varNode(Y),Z,U,_V).
-
 while(W,X,Y,_,V,_V) :- execute(W,Value1,V,_), execute(Y,Value2,V,T), \+ (condition(Value1,X,Value2)), append(T,[],_V).
 while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V).
 
 if(W,X,Y,Z,V,_V) :- (execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,_V));append(V,[],_V).
-% if(W,X,Y,Z,V,_V) :- (assigned(Y,Value,V,T), condition(W,X,Value), execute(Z,T,_V));append(V,[],_V).
 
 num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
