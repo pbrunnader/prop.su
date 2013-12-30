@@ -1,4 +1,15 @@
-% This is a prolog source code.
+%
+% This is the "assignment 2" for the course "Programming languages and Paradigms" 
+% at the Stockholm University 
+% 
+% assigment 2
+% 
+%  @author Peter Brunnader 
+%  @author Katrin Freihofner
+%  @version 1.0
+% 
+
+
 run(Program,_Variable) :-
     write('Parsing program.'), nl,
     parse(ParseTree,Program,[]),
@@ -109,16 +120,11 @@ removeVar(Name,[E|V],[E|_V]) :- Name \== [_|E], removeVar(Name,V,_V).
 
 while(numNode(W),X,numNode(Y),_,V,_V) :- (condition(W,X,Y), throw('error: while-loop is infinite.'));(\+ (condition(W,X,Y)), write('warning: while-loop is never entered.'), nl), append(V,[],_V).
 
-while(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), append(T,[],_V), \+ (condition(Value1,X,Value2)).
-while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,V,U), while(W,X,Y,Z,U,_V).
+while(W,X,Y,_,V,_V) :- execute(W,Value1,V,_), execute(Y,Value2,V,T), append(T,[],_V), \+ (condition(Value1,X,Value2)).
+while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,_), execute(Y,Value2,V,_), condition(Value1,X,Value2), execute(Z,V,U), while(W,X,Y,Z,U,_V).
 
-% while(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,S,T), append(V,[],_V), \+ (condition(Value1,X,Value2)), !.
-% while(W,X,Y,Z,V,_V) :- execute(Z,V,U), while(W,X,Y,Z,U,_V).
-
-%% while(W,X,Y,Z,V,_V) :- (execute(W,Value1,V,S), execute(Y,Value2,S,T), condition(Value1,X,Value2), execute(Z,T,U), while(W,X,Y,Z,U,_V));(append(V,[],_V)).
-
-if(W,X,Y,_,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), append(T,[],_V), \+ (condition(Value1,X,Value2)). 
-if(W,X,Y,Z,V,_V) :- execute(W,Value1,V,S), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,T,_V).
+if(W,X,Y,_,V,_V) :- execute(W,Value1,V,_), execute(Y,Value2,V,T), append(T,[],_V), \+ (condition(Value1,X,Value2)). 
+if(W,X,Y,Z,V,_V) :- execute(W,Value1,V,_), execute(Y,Value2,V,T), condition(Value1,X,Value2), execute(Z,T,_V).
 
 num(numNode(X)) --> [X],{number(X)}.
 var(varNode(X)) --> [X],{atom(X)}.
@@ -151,24 +157,4 @@ divToken --> ['/'].
 openToken --> ['('].
 closeToken --> [')'].
 
-
-% run([begin,b,:=,1,a,:=,0,write,b,write,a,b,:=,10,write,b,write,a,end],V).
-% run([begin,a,:=,0,while,5,<,10,a,:=,a,+,1,write,a,end], V).
-% run([begin,begin,a,:=,8,b,:=,2,c,:=,1,a,:=,7,end,end], V).
-%%%% run([begin,a,:=,5,while,10,>,a,begin,a,:=,a,+,1,write,a,end,end],V).
-% run([begin,a,:=,10,while,5,<,a,begin,write,a,a,:=,a,-,1,end,end],V).
-
-
-% run([begin,b,:=,10,write,a,write,b,end], V).
-% run([begin,begin,a,:=,1,end,end],V).
-% run([begin,a,:=,3,b,:=,1,while,20,>,a,begin,if,a,<,8,begin,write,a,end,a,:=,a,+,b,end,write,a,end],V).
-% run([begin,a,:=,1,-,2,+,3,write,a,end],V).
-% run([begin,a,:=,3,if,a,<,10,b,:=,100,write,a,end], V).
-% run([begin,write,a,a,:=,33,write,a,+,2,end], V).
-% run([begin,a,:=,5,b,:=,100,-,a,*,a,write,10,end], V).
-% run([begin,c,:=,30,a,:=,4,b,:=,c,+,5,-,a,end],V).
-% run([begin,c,:=,3,-,2,+,1,read,a,b,:=,a,+,1,write,b,end],V).
-% run([begin,while,a,<,10,+,1,begin,a,:=,a,+,1,write,a,end,end],V).
-% run([begin,if,a,<,10,+,1,begin,a,:=,a,+,1,write,a,end,end],V).
-% run([begin,a,:=,11,*,2,+,7,end],V).
 
