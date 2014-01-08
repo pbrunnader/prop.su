@@ -5,7 +5,6 @@
     (finally (println "Done."))))
 
 
-
 (def v (safe (/ 1 0)))
 (println v)
 
