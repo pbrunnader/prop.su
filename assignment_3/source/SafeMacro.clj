@@ -1,3 +1,11 @@
+; This is the "assignment 3" for the course "Programming languages and Paradigms"
+; at the Stockholm University
+;
+; @author Peter Brunnader 
+; @author Katrin Freihofner
+; @version 1.0
+
+
 (import (java.io FileReader File))
  
 (defmacro safe [param & form] 
@@ -9,25 +17,28 @@
         (println "nothing.") 
       ) a#)
     (catch Exception e# e#)
-    (finally (println "First case.")) 
   )
     
   `(try
     ~param
   (catch Exception e# e#)
-  (finally (println "Second case.")))
+  )
   )
 )
 
 
+(println "; (def v (safe (/ 10 5)))")
 (def v (safe (/ 10 5)))
-(println v)
+(println v "\n")
 
+(println "; (def v (safe (/ 10 0))) ")
 (def v (safe (/ 10 0)))
-(println v)
+(println v "\n")
 
+(println "; (def v (safe [s (FileReader. (File. \"file.txt\"))] (. s read)))")
 (def v (safe [s (FileReader. (File. "file.txt"))] (. s read)))
-(println v)
+(println v "\n")
 
+(println "; (def v (safe [s (FileReader. (File. \"missing-file\"))] (. s read)))")
 (def v (safe [s (FileReader. (File. "missing-file"))] (. s read)))
-(println v)
+(println v "\n")
