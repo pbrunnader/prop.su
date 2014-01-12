@@ -13,5 +13,5 @@ Functions are \cf2 executed at run time. They take arguments and \cf0 first eval
 
 \f0\fs22 Predefined macros in Clojure are for example: quote, let, recur\'85\
 In our safe example, the macro would not be possible to get handled as a function. If our safe example would be a function, the arguments [s (FileReader. (File. "file.txt"))] and (. s read) would always be evaluated before the function runs. Which would result in an error.\
-For the SQL-like macro example it would be possible to create a set of functions. \
+For the SQL-like macro example it would be possible to create a set of functions. These functions would be executed at run time. The return values of each function would replace the function and therefore passed to the next function and so on.\
 }
